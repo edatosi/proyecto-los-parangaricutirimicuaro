@@ -1,11 +1,12 @@
 package co.umariana.trabalenguas.web;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * POST /eliminar  (tarea de SERVLETS)
@@ -18,7 +19,7 @@ public class EliminarTrabalengua extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: EliminarTrabalengua.doPost()");
+        Contexto.servicio().eliminar(req.getParameter("codigo"));
+        resp.sendRedirect("listar");
     }
 }

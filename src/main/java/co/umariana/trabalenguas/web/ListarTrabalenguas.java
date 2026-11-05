@@ -1,11 +1,12 @@
 package co.umariana.trabalenguas.web;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * GET /listar  (tarea de SERVLETS)
@@ -24,7 +25,12 @@ public class ListarTrabalenguas extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: ListarTrabalenguas.doGet()");
+        if ("ranking".equals(req.getParameter("orden"))) {
+            req.setAttribute("trabalenguas", Contexto.servicio().ranking());
+        } else {
+            req.setAttribute("trabalenguas", Contexto.servicio().listar());
+        }
+        req.setAttribute("promedios", Contexto.servicio().promedioPorCategoria());
+        req.getRequestDispatcher("/WEB-INF/vistas/listar.jsp").forward(req, resp);
     }
 }
