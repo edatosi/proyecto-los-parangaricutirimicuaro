@@ -40,8 +40,34 @@ public class Trabalengua {
      * </ul>
      */
     public void validar() {
-        // TODO (MODELO): implementar las reglas descritas arriba.
-        throw new UnsupportedOperationException("TODO: validar()");
+        validarTextoObligatorio(codigo, "El código");
+        validarTextoObligatorio(titulo, "El título");
+        validarTextoObligatorio(categoria, "La categoría");
+        validarTextoObligatorio(archivo, "El archivo");
+        validarTexto(descripcion, "La descripción");
+
+        if (enredo < 1 || enredo > 10) {
+            throw new IllegalArgumentException("El enredo debe estar entre 1 y 10.");
+        }
+        if (!Double.isFinite(tiempoSeg) || tiempoSeg <= 0) {
+            throw new IllegalArgumentException("El tiempo debe ser mayor que 0.");
+        }
+    }
+
+    private static void validarTextoObligatorio(String texto, String campo) {
+        validarTexto(texto, campo);
+        if (texto.isBlank()) {
+            throw new IllegalArgumentException(campo + " no puede estar en blanco.");
+        }
+    }
+
+    private static void validarTexto(String texto, String campo) {
+        if (texto == null) {
+            throw new IllegalArgumentException(campo + " no puede ser nulo.");
+        }
+        if (texto.indexOf(';') >= 0 || texto.indexOf('\n') >= 0 || texto.indexOf('\r') >= 0) {
+            throw new IllegalArgumentException(campo + " no puede contener ';' ni saltos de línea.");
+        }
     }
 
     public String getCodigo() { return codigo; }
