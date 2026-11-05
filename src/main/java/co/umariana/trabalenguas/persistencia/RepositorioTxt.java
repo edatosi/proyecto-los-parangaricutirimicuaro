@@ -3,7 +3,10 @@ package co.umariana.trabalenguas.persistencia;
 import co.umariana.trabalenguas.modelo.Trabalengua;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,13 +35,54 @@ public class RepositorioTxt implements Repositorio {
 
     @Override
     public List<Trabalengua> cargar() throws IOException {
-        // TODO (PERSISTENCIA)
-        throw new UnsupportedOperationException("TODO: cargar()");
+        if (Files.notExists(archivo)) {
+            return new ArrayList<>();
+        }
+
+        List<Trabalengua> trabalenguas = new ArrayList<>();
+        for (String linea : Files.readAllLines(archivo, StandardCharsets.UTF_8)) {
+            if (linea.isBlank()) {
+                continue;
+            }
+
+            String[] campos = linea.split(";", -1);
+            if (campos.length != 7) {
+                continue;
+            }
+
+            try {
+                int enredo = Integer.parseInt(campos[3]);
+                double tiempoSeg = Double.parseDouble(campos[4]);
+                if (!Double.isFinite(tiempoSeg)) {
+                    continue;
+                }
+                trabalenguas.add(new Trabalengua(
+                        campos[0], campos[1], campos[2], enredo, tiempoSeg, campos[5], campos[6]));
+            } catch (NumberFormatException e) {
+                // Una línea inválida no debe impedir cargar los registros restantes.
+            }
+        }
+        return trabalenguas;
     }
 
     @Override
     public void guardar(List<Trabalengua> trabalenguas) throws IOException {
-        // TODO (PERSISTENCIA)
-        throw new UnsupportedOperationException("TODO: guardar()");
+        Path carpeta = archivo.getParent();
+        if (carpeta != null) {
+            Files.createDirectories(carpeta);
+        }
+
+        List<String> lineas = new ArrayList<>(trabalenguas.size());
+        for (Trabalengua trabalengua : trabalenguas) {
+            lineas.add(String.join(";",
+                    trabalengua.getCodigo(),
+                    trabalengua.getTitulo(),
+                    trabalengua.getCategoria(),
+                    Integer.toString(trabalengua.getEnredo()),
+                    Double.toString(trabalengua.getTiempoSeg()),
+                    trabalengua.getDescripcion(),
+                    trabalengua.getArchivo()));
+        }
+        Files.write(archivo, lineas, StandardCharsets.UTF_8);
     }
 }
