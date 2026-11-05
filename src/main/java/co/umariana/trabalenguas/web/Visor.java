@@ -1,11 +1,12 @@
 package co.umariana.trabalenguas.web;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * GET /visor  (tarea de SERVLETS)
@@ -25,7 +26,15 @@ public class Visor extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: Visor.doGet()");
+        String accion = req.getParameter("accion");
+        var servicio = Contexto.servicio();
+        var trabalengua = switch (accion == null ? "" : accion) {
+            case "siguiente" -> servicio.siguiente();
+            case "anterior" -> servicio.anterior();
+            default -> servicio.actual();
+        };
+        req.setAttribute("trabalengua", trabalengua);
+        req.setAttribute("total", servicio.total());
+        req.getRequestDispatcher("/WEB-INF/vistas/visor.jsp").forward(req, resp);
     }
 }
